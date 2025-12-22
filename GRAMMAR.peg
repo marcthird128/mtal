@@ -1,0 +1,103 @@
+# MTAL Language Grammar
+# Uses a syntax like Bryan Ford's PEG
+# Elements are spacing-terminated constructions
+# Symbols are core constructions
+#
+# The main definition is Program
+
+Literal <- NUMBER / CHAR / NAME
+
+Expression <-
+	ADD Expression Expression /
+	SUBTRACT Expression Expression /
+	MULTIPLY Expression Expression /
+	DIVIDE Expression Expression /
+	MODULO Expression Expression /
+	AND Expression Expression /
+	OR Expression Expression /
+	NOT Expression /
+	XOR Expression Expression /
+	LSHIFT Expression Expression /
+	SRSHIFT Expression Expression /
+	RSHIFT Expression Expression /
+	INVERT Expression /
+	DEREFERENCE Size Expression /
+	CAST Size Expression /
+	SCAST Size Expression /
+	EQUAL Expression Expression /
+	LESS Expression Expression /
+	GREATER Expression Expression /
+	Literal
+
+Statement <-
+	DATA NAME Literal (SEPERATOR Literal)* /
+	DEFVAR Size NAME (SEPERATOR NAME)* /
+	DELVAR NAME (SEPERATOR NAME)* /
+	PUT Expression (SEPERATOR Expression)* /
+	GET Size Expression (SEPERATOR Size Expression)* /
+	ASSIGNMENT Expression Expression /
+	LABEL NAME /
+	RMLABEL NAME /
+	CALL Expression /
+	RETURN /
+	JUMP Expression Expression
+
+Program <- Spacing Statement* EndOfFile
+
+############
+# ELEMENTS #
+############
+
+NUMBER <- '-'? Digit+ ('\\' Size)? Spacing
+CHAR <- '"' ('\\' ('\\' / '"' / 'n' / 't' / 'r') / !'"' .) '"' Spacing
+NAME <- Letter (Letter / Digit)* Spacing
+SEPERATOR <- ',' Spacing
+DEREFERENCE <- '\'' Spacing
+CAST <- '.' Spacing
+SCAST <- '`' Spacing
+ASSIGNMENT <- '=' Spacing
+DEFVAR <- '[' Spacing
+DELVAR <- ']' Spacing
+PUT <- '(' Spacing
+GET <- ')' Spacing
+CALL <- '{' Spacing
+RETURN <- '}' Spacing
+LABEL <- ':' Spacing
+RMLABEL <- ';' Spacing
+JUMP <- '?' Spacing
+DATA <- '$' Spacing
+ADD <- '+' Spacing
+SUBTRACT <- '-' Spacing
+MULTIPLY <- '*' Spacing
+DIVIDE <- '/' Spacing
+MODULO <- '%' Spacing
+AND <- '&' Spacing
+OR <- '|' Spacing
+NOT <- '~' Spacing
+XOR <- '^' Spacing
+LSHIFT <- '<<' Spacing
+SRSHIFT <- '>>>' Spacing
+RSHIFT <- '>>' Spacing
+INVERT <- '!' Spacing
+EQUAL <- '==' Spacing
+LESS <- '<' Spacing
+GREATER <- '>' Spacing
+
+###########
+# SYMBOLS #
+###########
+
+Size <- '1' / '2' / '4' / '8' / 'P' / 'W'
+Digit <- '0' / '1' / '2' / '3' / '4' / '5' / '6' / '7' / '8' / '9'
+Letter <-
+	'a' / 'b' / 'c' / 'd' / 'e' / 'f' / 'g' / 'h' / 'i' / 'j' /
+	'k' / 'l' / 'm' / 'n' / 'o' / 'p' / 'q' / 'r' / 's' / 't' /
+	'u' / 'v' / 'w' / 'x' / 'y' / 'z' / 'A' / 'B' / 'C' / 'D' /
+	'E' / 'F' / 'G' / 'H' / 'I' / 'J' / 'K' / 'L' / 'M' / 'N' /
+	'O' / 'P' / 'Q' / 'R' / 'S' / 'T' / 'U' / 'V' / 'W' / 'X' /
+	'Y' / 'Z' / '_'
+Spacing <- (Space / Comment)*
+Comment <- '#' (!EndOfLine .)* EndOfLine
+Space <- ' ' / '\t' / EndOfLine
+EndOfLine <- '\r\n' / '\n' / '\r' / EndOfFile
+EndOfFile <- !.

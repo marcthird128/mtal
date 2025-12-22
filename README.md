@@ -11,12 +11,24 @@ exists and takes a single pointer argument, and that the pointer
 size is 8 bytes, the program would be:
 
 ```
-#12s"Hello World",0u1 -- Define string
-)8s}print{ -- Call print
+$str"H","e","l","l","o"," ","W","o","r","l","d",0
+:main(str{print}
 ```
 
-The most compact form is `#12s"Hello World",0u1)8s}print{` with no
-extra space or comments.
+A method for data string literals has not been defined yet.
 
 ## Syntax
 
+The official syntax is define in [GRAMMAR.peg](GRAMAR.peg).
+
+## Operation
+
+The function of the operators is defined in [OPERATION.md](OPERATION.md)
+
+## Tutorial
+
+The tutorial is in [TUTORIAL.md](TUTORIAL.md)
+
+## Implementation
+
+A C implementation for x86 is under `./impl`. Compile it with make.
