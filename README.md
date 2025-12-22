@@ -19,7 +19,7 @@ A method for data string literals has not been defined yet.
 
 ## Syntax
 
-The official syntax is define in [GRAMMAR.peg](GRAMAR.peg).
+The official syntax is define in [GRAMMAR.peg](GRAMMAR.peg).
 
 ## Operation
 
