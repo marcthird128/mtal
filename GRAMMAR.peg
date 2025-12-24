@@ -70,7 +70,7 @@ Statement <-
 	# Jumps to last saved return address
 	RETURN /
 	# Declares a global label
-	GLOBAL NAME /
+	GLABEL NAME /
 	# Declares a local label
 	LABEL NAME /
 	# Deletes a local label
@@ -79,8 +79,12 @@ Statement <-
 	JUMP Expression Expression
 	# Puts #2 at address #1
 	ASSIGNMENT Expression Expression /
-	# Declares data section pointed to  by #1
+	# Declares global data section pointed to by #1
+	GDATA NAME Literal (SEPERATOR Literal)* /
+	# Declares local data section pointed to  by #1
 	DATA NAME Literal (SEPERATOR Literal)* /
+	# Deletes local data section(s) pointed to by #1
+	RMDATA NAME (SEPERATOR NAME)* /
 
 Program <- Spacing Statement* EndOfFile
 
@@ -124,12 +128,14 @@ PUT <- '(' Spacing
 GET <- ')' Spacing
 CALL <- '{' Spacing
 RETURN <- '}' Spacing
-GLOBAL <- '@' Spacing
+GLABEL <- '@' Spacing
 LABEL <- ':' Spacing
 RMLABEL <- ';' Spacing
 JUMP <- '?' Spacing
 ASSIGNMENT <- '=' Spacing
-DATA <- '$' Spacing
+GDATA <- '$@' Spacing
+DATA <- '$:' Spacing
+RMDATA <- '$;' Spacing
 
 # Other stuff
 SEPERATOR <- ',' Spacing
