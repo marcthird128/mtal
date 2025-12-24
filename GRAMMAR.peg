@@ -1,13 +1,15 @@
 # MTAL Language Grammar
 # Uses a syntax like Bryan Ford's PEG
-# Elements are spacing-terminated constructions
-# Symbols are core constructions
 #
 # The main definition is Program
 
 Literal <- NUMBER / CHAR / NAME
 
 Expression <-
+	Literal # Literal goes first for negative numbers to parse
+	DEREFERENCE Size Expression /
+	CAST Size Expression /
+	SCAST Size Expression /
 	ADD Expression Expression /
 	SUBTRACT Expression Expression /
 	MULTIPLY Expression Expression /
@@ -21,13 +23,9 @@ Expression <-
 	SRSHIFT Expression Expression /
 	RSHIFT Expression Expression /
 	INVERT Expression /
-	DEREFERENCE Size Expression /
-	CAST Size Expression /
-	SCAST Size Expression /
 	EQUAL Expression Expression /
 	LESS Expression Expression /
 	GREATER Expression Expression /
-	Literal
 
 Statement <-
 	DATA NAME Literal (SEPERATOR Literal)* /
@@ -44,44 +42,55 @@ Statement <-
 
 Program <- Spacing Statement* EndOfFile
 
-############
-# ELEMENTS #
-############
+##########
+# TOKENS #
+##########
 
+
+# Literals
 NUMBER <- '-'? Digit+ ('\\' Size)? Spacing
 CHAR <- '"' ('\\' ('\\' / '"' / 'n' / 't' / 'r') / !'"' .) '"' Spacing
 NAME <- Letter (Letter / Digit)* Spacing
-SEPERATOR <- ',' Spacing
+
+# Expressions
 DEREFERENCE <- '\'' Spacing
 CAST <- '.' Spacing
-SCAST <- '`' Spacing
-ASSIGNMENT <- '=' Spacing
+SCAST <- '`.' Spacing
+ADD <- '+' Spacing
+SUBTRACT <- '-' Spacing
+MULTIPLY <- '*' Spacing
+DIVIDE <- '/' Spacing
+SDIVIDE <- '`/' Spacing
+MODULO <- '%' Spacing
+SMODULO <- '`%' Spacing
+AND <- '&' Spacing
+OR <- '|' Spacing
+XOR <- '^' Spacing
+NOT <- '~' Spacing
+LSHIFT <- '<<' Spacing
+RSHIFT <- '>>' Spacing
+SRSHIFT <- '`>>' Spacing
+INVERT <- '!' Spacing
+EQUAL <- '==' Spacing
+LESS <- '<' Spacing
+GREATER <- '>' Spacing
+
+# Statements
 DEFVAR <- '[' Spacing
 DELVAR <- ']' Spacing
 PUT <- '(' Spacing
 GET <- ')' Spacing
 CALL <- '{' Spacing
 RETURN <- '}' Spacing
+GLOBAL <- '@' Spacing
 LABEL <- ':' Spacing
 RMLABEL <- ';' Spacing
 JUMP <- '?' Spacing
+ASSIGNMENT <- '=' Spacing
 DATA <- '$' Spacing
-ADD <- '+' Spacing
-SUBTRACT <- '-' Spacing
-MULTIPLY <- '*' Spacing
-DIVIDE <- '/' Spacing
-MODULO <- '%' Spacing
-AND <- '&' Spacing
-OR <- '|' Spacing
-NOT <- '~' Spacing
-XOR <- '^' Spacing
-LSHIFT <- '<<' Spacing
-SRSHIFT <- '>>>' Spacing
-RSHIFT <- '>>' Spacing
-INVERT <- '!' Spacing
-EQUAL <- '==' Spacing
-LESS <- '<' Spacing
-GREATER <- '>' Spacing
+
+# Other stuff
+SEPERATOR <- ',' Spacing
 
 ###########
 # SYMBOLS #
