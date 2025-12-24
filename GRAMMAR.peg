@@ -1,5 +1,10 @@
 # MTAL Language Grammar
 # Uses a syntax like Bryan Ford's PEG
+# 
+# In the following sections, each operator is documented.
+# #x refers to operand x, counting from 1.
+# Repeating operands are still referenced in the order
+# they occurred in the grammar.
 #
 # The main definition is Program
 
@@ -7,38 +12,75 @@ Literal <- NUMBER / CHAR / NAME
 
 Expression <-
 	Literal # Literal goes first for negative numbers to parse
+
+	# Returns the first #1 bytes at address #2
 	DEREFERENCE Size Expression /
+	# Returns #2 truncated or zero-extended to #1 bytes
 	CAST Size Expression /
+	# Returns #2 truncated or sign-extended to #1 bytes
 	SCAST Size Expression /
+	# Returns #1 + #2
 	ADD Expression Expression /
+	# Returns #1 - #2
 	SUBTRACT Expression Expression /
+	# Returns #1 * #2
 	MULTIPLY Expression Expression /
+	# Returns unsigned #1 / #2
 	DIVIDE Expression Expression /
+	# Returns signed #1 / #2
+	SDIVIDE Expression Expression /
+	# Returns modulo of unsigned #1 / #2
 	MODULO Expression Expression /
+	# Returns modulo of signed #1 / #2
+	SMODULO Expression Expression /
+	# Returns binary #1 AND #2
 	AND Expression Expression /
+	# Returns binary #1 OR #2
 	OR Expression Expression /
-	NOT Expression /
+	# Returns binary #1 XOR #2
 	XOR Expression Expression /
+	# Returns binary NOT #1
+	NOT Expression /
+	# Returns #1 shifted #2 bits left
 	LSHIFT Expression Expression /
-	SRSHIFT Expression Expression /
+	# Returns #1 shifted #2 bits right, padded with zeros
 	RSHIFT Expression Expression /
+	# Returns #1 shifted #2 bits right, sign-extended
+	SRSHIFT Expression Expression /
+	# Returns 1 if #1 is 0; 0 otherwise
 	INVERT Expression /
+	# Returns 1 if #1 equals #2; 0 otherwise
 	EQUAL Expression Expression /
+	# Returns the sign bit of #1 - #2
 	LESS Expression Expression /
+	# Returns the sign bit of #2 - #1
 	GREATER Expression Expression /
 
 Statement <-
-	DATA NAME Literal (SEPERATOR Literal)* /
+	# Defines variable(s) #2 of size #1
 	DEFVAR Size NAME (SEPERATOR NAME)* /
+	# Deletes variable(s) #1
 	DELVAR NAME (SEPERATOR NAME)* /
+	# Puts #1(s) into function space
 	PUT Expression (SEPERATOR Expression)* /
+	# For each section, takes #1 bytes and puts them at address #2
 	GET Size Expression (SEPERATOR Size Expression)* /
-	ASSIGNMENT Expression Expression /
-	LABEL NAME /
-	RMLABEL NAME /
+	# Saves return address and jumps to #1
 	CALL Expression /
+	# Jumps to last saved return address
 	RETURN /
+	# Declares a global label
+	GLOBAL NAME /
+	# Declares a local label
+	LABEL NAME /
+	# Deletes a local label
+	RMLABEL NAME /
+	# Jumps to #2 if #1 is non-zero
 	JUMP Expression Expression
+	# Puts #2 at address #1
+	ASSIGNMENT Expression Expression /
+	# Declares data section pointed to  by #1
+	DATA NAME Literal (SEPERATOR Literal)* /
 
 Program <- Spacing Statement* EndOfFile
 
